@@ -1,0 +1,16 @@
+name: Testing on Mac, Linux and Windows
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Testing Linux Installation
+        run: |
+            bash nvim_app.sh
