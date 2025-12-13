@@ -2,8 +2,7 @@
 
 ### Shell script / Batch-Script
 - [ ] shell and batch file are created for Linux/Mac and Windows
-- [ ] Installation for linux systems are working => docker tested
-- [ ] Installation for windows systems are working => Test on real system
+- [ ] Installation for linux macOS and Windows are working => docker tested
 
 
 ## 0.0.2

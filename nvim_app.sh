@@ -2,6 +2,7 @@
 
 main()
 {
+  ## Start nvim if possible
   if which nvim > /dev/null; then
     nvim
     exit;
@@ -19,7 +20,7 @@ main()
 
     case "$OS" in
       Darwin)
-        install_brew_debian
+        install_brew_macos
         ;;
       Linux)
         install_brew_linux
@@ -29,24 +30,43 @@ main()
         exit 1
         ;;
     esac
+    source_brew
   fi
 
   brew install neovim
   nvim --version
-  #nvim
 
+  if [ "$1" = "--pipeline" ]; then
+    # Interactive mode: start nvim normally
+    nvim
+  else
+    # Pipeline mode: start nvim and quit immediately
+    nvim -c ':qa'
+  fi
+  
 }
 
-install_brew_linux()
-{
-  echo "Linux detected, installing brew for linux"
-
+install_brew_linux() {
+  echo "Linux detected, installing brew for Linux"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 }
 
-install_brew_debian()
-{
-  echo "MacOS detected, installing brew for mac"
-
+install_brew_macos() {
+  echo "macOS detected, installing brew for mac"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  export PATH="/usr/local/bin:$PATH"
 }
+
+source_brew() {
+  if [ -f ~/.zshrc ]; then
+    source ~/.zshrc
+  elif [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+  else
+    echo "No .zshrc or .bashrc found. Please check your shell configuration."
+  fi
+}
+ 
 
 main

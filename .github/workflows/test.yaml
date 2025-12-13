@@ -13,4 +13,4 @@ jobs:
 
       - name: Testing Linux Installation
         run: |
-            bash nvim_app.sh
+            bash nvim_app.sh --pipeline
