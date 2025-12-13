@@ -29,7 +29,7 @@ nvim --version
 
 :: If --pipeline argument is passed, start nvim and quit immediately, otherwise start nvim
 if "%1" == "--pipeline" (
-    nvim -c "qa"
+    nvim -c ":qa"
 ) else (
     nvim
 )
