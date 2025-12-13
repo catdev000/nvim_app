@@ -39,11 +39,12 @@ jobs:
 
       - name: Uninstall Chocolatey (if installed)
         run: |
-          if exist "C:\ProgramData\chocolatey" (
+          if (Test-Path "C:\ProgramData\chocolatey") {
             Remove-Item -Recurse -Force "C:\ProgramData\chocolatey"
-          )
+          }
 
       - name: Testing Windows Installation
+        shell: cmd
         run: |
           nvim_app.bat --pipeline
-  
+
