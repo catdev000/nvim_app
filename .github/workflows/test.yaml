@@ -16,7 +16,7 @@ jobs:
             bash nvim_app.sh --pipeline
  
   test-macOS:
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: macos-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
