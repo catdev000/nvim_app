@@ -14,3 +14,13 @@ jobs:
       - name: Testing Linux Installation
         run: |
             bash nvim_app.sh --pipeline
+ 
+  test-macOS:
+    runs-on: [self-hosted, macOS, ARM64]
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - name: Testing MacOS Installation
+        run: |
+          bash nvim_app.sh --pipeline
+
