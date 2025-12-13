@@ -20,6 +20,15 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+      
+      - name: Uninstall Homebrew
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+        sudo rm -rf /opt/homebrew
+        sudo rm -rf /usr/local/Homebrew
+        sed -i '' '/eval.*brew shellenv/d' ~/.zprofile ~/.zshrc ~/.bash_profile
+        rm -rf ~/Library/Caches/Homebrew
+
       - name: Testing MacOS Installation
         run: |
           bash nvim_app.sh --pipeline
