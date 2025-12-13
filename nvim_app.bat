@@ -21,9 +21,13 @@ if %errorlevel% == 0 (
 
 :: Install NeoVim
 choco install neovim --yes
+
+:: Refresh environment variables so nvim is recognized
+refreshenv
+
 nvim --version
 
-:: If --pipeline argument is passed, start nvim and quit immediately
+:: If --pipeline argument is passed, start nvim and quit immediately, otherwise start nvim
 if "%1" == "--pipeline" (
     nvim -c "qa"
 ) else (
