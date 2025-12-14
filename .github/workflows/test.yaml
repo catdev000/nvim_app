@@ -2,7 +2,6 @@ name: Testing on Mac, Linux and Windows
 
 on:
   push:
-  pull_request:
 
 jobs:
   test-linux:
@@ -31,4 +30,21 @@ jobs:
       - name: Testing MacOS Installation
         run: |
           bash nvim_app.sh --pipeline
+  
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Uninstall Chocolatey (if installed)
+        run: |
+          if (Test-Path "C:\ProgramData\chocolatey") {
+            Remove-Item -Recurse -Force "C:\ProgramData\chocolatey"
+          }
+
+      - name: Testing Windows Installation
+        shell: cmd
+        run: |
+          nvim_app.bat --pipeline
 
