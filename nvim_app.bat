@@ -1,38 +1,53 @@
 @echo off
+setlocal enabledelayedexpansion
 
 :main
-:: Start nvim if possible
-where nvim >nul 2>&1
-if %errorlevel% == 0 (
-    nvim
+if exist "C:\tools\neovim\nvim-win64\bin\nvim.exe" (
+    set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
+    nvim %*
     exit /b
 )
 
 echo NeoVim is not installed, installing NeoVim...
 
-:: Installing Chocolatey if not installed
+:: Setup Chocolatey
 where choco >nul 2>&1
 if %errorlevel% == 0 (
-    choco --version
-) else (
-    echo Chocolatey required for installation, installing Chocolatey first
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+    choco --version >nul 2>&1
+    if !errorlevel! == 0 (
+        echo Chocolatey ready
+        goto :choco_ready
+    )
 )
 
-:: Install NeoVim
+echo Fixing Chocolatey...
+if exist "C:\ProgramData\chocolatey" rmdir /s /q "C:\ProgramData\chocolatey"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+
+:choco_ready
+set "PATH=%PATH%;C:\ProgramData\chocolatey\bin"
+
+:: NOW check nvim again with correct PATH
+where nvim >nul 2>&1
+if %errorlevel! == 0 (
+    echo NeoVim ready
+    goto :launch_nvim
+)
+
+:: Only install if truly missing
+echo Installing NeoVim...
 choco install neovim --yes
 
-:: Refresh environment variables so nvim is recognized
-refreshenv
+:: Correct Neovim PATH
+set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
 
+:launch_nvim
 nvim --version
 
-:: If --pipeline argument is passed, start nvim and quit immediately, otherwise start nvim
-if "%1" == "--pipeline" (
+if "%1"=="--pipeline" (
     nvim -c ":qa"
 ) else (
     nvim
 )
 
 goto :eof
-
