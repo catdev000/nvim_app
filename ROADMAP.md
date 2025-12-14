@@ -1,3 +1,17 @@
+## 0.0.3
+
+### Add Start Menu on startup
+- [ ] Add a menu option into the nvchad configuration and bind it to a shortcut
+- [ ] Menu shall have options "Open recent projects (<Space>+f+p)", "Package Manager (:Mason)", "Exit Menu", "Quit Nvim (:qa)", 
+- [ ] Start that menu on each startup of the nvim / execute the shortcut
+
+### Add a terminal opener at the bottom of NvimTree
+- [ ] Add an clickable option to open a new horizontal terminal
+
+### Complete README
+- [ ] Describe how to install nvim and how to use it (script and executable files)
+
+
 ## 0.0.2
 
 ### Create Executables via pipeline
@@ -7,6 +21,7 @@
 ### Adding choice of special options
 - [ ] Added option to install nvchad after nvim Installation
 - [ ] Added option to preconfigurate nvim to always display the file selection "NVimTree"
+
 
 ## 0.0.1
 

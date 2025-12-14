@@ -4,8 +4,32 @@ on:
   push:
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      workflows_changed: ${{ steps.filter.outputs.workflows == 'true' }}
+      sh_changed: ${{ steps.filter.outputs.sh == 'true' }}
+      bat_changed: ${{ steps.filter.outputs.bat == 'true' }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Detect file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            workflows:
+              - '.github/workflows/**'
+            sh:
+              - 'nvim_app.sh'
+            bat:
+              - 'nvim_app.bat'
+
   test-linux:
     runs-on: ubuntu-latest
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -13,9 +37,11 @@ jobs:
       - name: Testing Linux Installation
         run: |
           bash nvim_app.sh --pipeline
- 
+
   test-macOS:
     runs-on: macos-latest
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -30,9 +56,11 @@ jobs:
       - name: Testing MacOS Installation
         run: |
           bash nvim_app.sh --pipeline
-  
+
   test-windows:
     runs-on: windows-latest
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.bat_changed == 'true' }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
