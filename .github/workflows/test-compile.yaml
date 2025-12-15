@@ -138,7 +138,7 @@ jobs:
           path: nvim_macos.dmg
 
   release:
-    needs: [detect-changes, windows-upload, linux-upload, macos-upload]
+    needs: [detect-changes, upload-windows, upload-linux, upload-macOS]
     if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
     runs-on: ubuntu-latest
     steps:
