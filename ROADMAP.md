@@ -6,7 +6,7 @@
 
 ## 0.0.3
 
-### Add Start Menu on startup
+### Add Start Menu on startup 
 - [ ] Add a menu option into the nvchad configuration and bind it to a shortcut
 - [ ] Menu shall have options "Open recent projects (<Space>+f+p)", "Package Manager (:Mason)", "Exit Menu", "Quit Nvim (:qa)", 
 - [ ] Start that menu on each startup of the nvim / execute the shortcut
