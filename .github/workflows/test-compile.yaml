@@ -34,6 +34,7 @@ jobs:
             echo "version_changed=true" >> $GITHUB_OUTPUT
           else
             echo "version_changed=false" >> $GITHUB_OUTPUT
+          fi
 
   test-linux:
     runs-on: ubuntu-latest
