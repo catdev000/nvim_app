@@ -149,8 +149,11 @@ jobs:
       - name: Extract version from commit
         id: version
         run: |
-          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oE '\d+\.\d+\.\d+' | head -1)
+          VERSION=$(git log -1 --pretty=%B | grep -oE '\d+\.\d+\.\d+' | head -1)
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+    
+      - name: List artifacts for debug
+        run: ls -la nvim-*/
     
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -158,8 +161,8 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           name: "Release ${{ steps.version.outputs.tag }}"
           files: |
-            nvim-windows/*.zip
-            nvim-linux/*.tar.gz
-            nvim-macos/*.dmg
+            nvim-windows/nvim_windows.zip
+            nvim-linux/nvim_linux.tar.gz
+            nvim-macos/nvim_macos.dmg
           draft: false
-          prerelease: false
+          prerelease: false 
