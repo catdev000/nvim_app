@@ -77,76 +77,54 @@ jobs:
         run: |
           nvim_app.bat --pipeline
 
-  windows-compile:
-    needs: [detect-changes, test-windows]
+  windows-upload:
+    needs: test-windows
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      
-      - name: Install PyInstaller
-        run: pip install pyinstaller
-      
-      - name: Compile nvim_app.bat to exe
-        run: |
-          pyinstaller --onefile --name nvim-app nvim_app.bat
-        shell: cmd
-      
-      - name: Upload Windows EXE
-        uses: actions/upload-artifact@v4
-        with:
-          name: nvim-app-windows
-          path: dist/nvim-app.exe
 
-  linux-compile:
-    needs: [detect-changes, test-linux]
+      - name: Rename and package Windows
+        shell: cmd
+        run: |
+          copy nvim_app.bat nvim_windows.bat
+          mkdir dist-windows
+          copy nvim_windows.bat dist-windows\
+          7z a nvim_windows.zip dist-windows\
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nvim-windows
+          path: nvim_windows.zip
+    
+
+  linux-upload:
+    needs: test-linux
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Make executable and package as AppImage
-        uses: AppImageCommunity/github-actions-appimage-builder@v1
+      - name: Rename and package Linux
+        run: |
+          cp nvim_app.sh nvim_linux.sh
+          chmod +x nvim_linux.sh
+          tar -czf nvim_linux.tar.gz --transform 's|^|nvim-app/|' nvim_linux.sh
+      - uses: actions/upload-artifact@v4
         with:
-          appdir: True
-          base: ubuntu20.04
-          file: nvim_app.sh
-          arch: x86_64
-      
-      - name: Upload Linux AppImage
-        uses: actions/upload-artifact@v4
-        with:
-          name: nvim-app-linux
-          path: nvim-app*.AppImage
+          name: nvim-linux
+          path: nvim_linux.tar.gz
 
-  macos-compile:
-    needs: [detect-changes, test-macOS]
+  macos-upload:
+    needs: test-macOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      
-      - name: Install PyInstaller
-        run: pip install pyinstaller
-      
-      - name: Compile to macOS app
+      - name: Rename and package macOS
         run: |
-          pyinstaller --onefile --name nvim-app nvim_app.sh
-      
-      - name: Create DMG
-        run: |
-          hdiutil create -volname "nvim-app" -srcfolder dist -ov -format UDZO nvim-app.dmg
-      
-      - name: Upload macOS DMG
-        uses: actions/upload-artifact@v4
+          cp nvim_app.sh nvim_macos.sh
+          chmod +x nvim_macos.sh
+          mkdir nvim-app
+          cp nvim_macos.sh nvim-app/
+          hdiutil create -volname "nvim-app" -srcfolder nvim-app -ov -format UDZO nvim_macos.dmg
+      - uses: actions/upload-artifact@v4
         with:
-          name: nvim-app-macos
-          path: nvim-app.dmg
-
+          name: nvim-macos
+          path: nvim_macos.dmg

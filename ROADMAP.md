@@ -15,9 +15,9 @@
 - [ ] Add an clickable option to open a new horizontal terminal
 
 ### Add Updates for nvim_app
-- [ ] Executables create a folder in root directory of OS ".nvim_app" and run "git clone git@github.com:foxy00000/nvim_app.git"
+- [ ] Batch/Shell create a folder in root directory of OS ".nvim_app" and run "git clone git@github.com:foxy00000/nvim_app.git"
 - [ ] If folder .nvim_app/nvim_app already exists run "git pull" in it on startup (before running "nvim")
-- [ ] The Executable just calls the shell / batch script from there
+- [ ] The Shell/Batch Script needs to change init.lua and mappings.lua of nvim/nvchad config when there was a change in the repo
 - [ ] Before running nvim in the script it asks where to open nvim exactly and then cd there
 
 ### Complete README
@@ -26,8 +26,8 @@
 
 ## 0.0.2
 
-### Create Executables via pipeline
-- [ ] Executables will be created in the pipeline for windows and linux and added as realeases
+### Upload Files for Downloading
+- [ ] Batch and Shell Files will always be added as realeases
 - [ ] Realeases shall only be created on main branch and only if the Commit message contains "\d{1,}.\d{1,}.\d{1,}"
 
 ### Adding choice of special options
