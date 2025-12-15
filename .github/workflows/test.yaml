@@ -37,6 +37,12 @@ jobs:
       - name: Testing Linux Installation
         run: |
           bash nvim_app.sh --pipeline
+      
+      - name: Trigger Linux compile
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: compile-linux
 
   test-macOS:
     runs-on: macos-latest
@@ -57,6 +63,12 @@ jobs:
         run: |
           bash nvim_app.sh --pipeline
 
+      - name: Trigger macOS compile
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: compile-macos
+
   test-windows:
     runs-on: windows-latest
     needs: detect-changes
@@ -75,4 +87,10 @@ jobs:
         shell: cmd
         run: |
           nvim_app.bat --pipeline
+
+      - name: Trigger Windows compile
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: compile-windows
 

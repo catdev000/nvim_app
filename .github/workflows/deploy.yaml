@@ -1,17 +1,13 @@
 name: Compile into Executables
 
 on:
-  workflow_run:
-    workflows: ["Testing on Mac, Linux and Windows"]
-    branches: [main, add-compiler]
-    types:
-      - completed
+  repository_dispatch:
+    types: [compile-windows, compile-linux, compile-macos]
 
 jobs:
   windows-compile:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: github.event_name == 'repository_dispatch' && github.event.action == 'compile-windows'
     runs-on: windows-latest
-    needs: test-windows
     steps:
       - uses: actions/checkout@v4
       
@@ -35,9 +31,8 @@ jobs:
           path: dist/nvim-app.exe
 
   linux-compile:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: github.event_name == 'repository_dispatch' && github.event.action == 'compile-linux'
     runs-on: ubuntu-latest
-    needs: test-linux
     steps:
       - uses: actions/checkout@v4
       
@@ -56,9 +51,8 @@ jobs:
           path: nvim-app*.AppImage
 
   macos-compile:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: github.event_name == 'repository_dispatch' && github.event.action == 'compile-macos'
     runs-on: macos-latest
-    needs: test-macOS
     steps:
       - uses: actions/checkout@v4
       
