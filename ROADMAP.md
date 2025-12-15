@@ -1,3 +1,9 @@
+## 0.0.4
+
+### Add Docker terminal window to nvim
+- [ ] Add an docker terminal overview plugin on first startup if user wants that (after Installation)
+
+
 ## 0.0.3
 
 ### Add Start Menu on startup
