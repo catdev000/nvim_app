@@ -14,6 +14,12 @@
 ### Add a terminal opener at the bottom of NvimTree
 - [ ] Add an clickable option to open a new horizontal terminal
 
+### Add Updates for nvim_app
+- [ ] Executables create a folder in root directory of OS ".nvim_app" and run "git clone git@github.com:foxy00000/nvim_app.git"
+- [ ] If folder .nvim_app/nvim_app already exists run "git pull" in it on startup (before running "nvim")
+- [ ] The Executable just calls the shell / batch script from there
+- [ ] Before running nvim in the script it asks where to open nvim exactly and then cd there
+
 ### Complete README
 - [ ] Describe how to install nvim and how to use it (script and executable files)
 
@@ -26,6 +32,8 @@
 
 ### Adding choice of special options
 - [ ] Added option to install nvchad after nvim Installation
+- [ ] Implement template strategy to add code to add custom code to init.lua and mappings.lua
+- [ ] Add pipeline tests to ensure templates are applied correctly to the files
 - [ ] Added option to preconfigurate nvim to always display the file selection "NVimTree"
 
 

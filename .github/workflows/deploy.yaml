@@ -1,0 +1,86 @@
+name: Compile into Executables
+
+on:
+  workflow_run:
+    workflows: ["Testing on Mac, Linux and Windows"]
+    branches: [main, add-compiler]
+    types:
+      - completed
+
+jobs:
+  windows-compile:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: windows-latest
+    needs: test-windows
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+      
+      - name: Compile nvim_app.bat to exe
+        run: |
+          pyinstaller --onefile --name nvim-app nvim_app.bat
+        shell: cmd
+      
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: nvim-app-windows
+          path: dist/nvim-app.exe
+
+  linux-compile:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    needs: test-linux
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Make executable and package as AppImage
+        uses: AppImageCommunity/github-actions-appimage-builder@v1
+        with:
+          appdir: True
+          base: ubuntu20.04
+          file: nvim_app.sh
+          arch: x86_64
+      
+      - name: Upload Linux AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: nvim-app-linux
+          path: nvim-app*.AppImage
+
+  macos-compile:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: macos-latest
+    needs: test-macOS
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+      
+      - name: Compile to macOS app
+        run: |
+          pyinstaller --onefile --name nvim-app nvim_app.sh
+      
+      - name: Create DMG
+        run: |
+          hdiutil create -volname "nvim-app" -srcfolder dist -ov -format UDZO nvim-app.dmg
+      
+      - name: Upload macOS DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: nvim-app-macos
+          path: nvim-app.dmg
+
