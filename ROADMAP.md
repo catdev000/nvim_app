@@ -27,8 +27,8 @@
 ## 0.0.2
 
 ### Upload Files for Downloading
-- [ ] Batch and Shell Files will always be added as realeases
-- [ ] Realeases shall only be created on main branch and only if the Commit message contains "\d{1,}.\d{1,}.\d{1,}"
+- [x] Batch and Shell Files will always be added as realeases
+- [x] Realeases shall only be created on main branch and only if the Commit message contains "\d{1,}.\d{1,}.\d{1,}"
 
 ### Adding choice of special options
 - [ ] Added option to install nvchad after nvim Installation
