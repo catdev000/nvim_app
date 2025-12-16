@@ -30,6 +30,12 @@
 - [x] Batch and Shell Files will always be added as realeases
 - [x] Realeases shall only be created on main branch and only if the Commit message contains "\d{1,}.\d{1,}.\d{1,}"
 
+### Add docs
+- [ ] Added How-shell-works doc
+- [ ] Added How-batch-works doc
+- [ ] Added How-pipeline-works doc
+- [ ] Added template strategy doc
+
 ### Adding choice of special options
 - [ ] Added option to install nvchad after nvim Installation
 - [ ] Implement template strategy to add code to add custom code to init.lua and mappings.lua
