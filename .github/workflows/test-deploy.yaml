@@ -22,11 +22,14 @@ jobs:
         with:
           filters: |
             workflows:
-              - '.github/workflows/**'
+              paths:
+                - '.github/workflows/**'
             sh:
-              - 'nvim_app.sh'
+              paths:
+                - 'nvim_app.sh'
             bat:
-              - 'nvim_app.bat'
+              paths:
+                - 'nvim_app.bat'
 
       - id: version-check
         name: Check for version in commit
