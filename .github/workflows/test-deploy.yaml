@@ -1,0 +1,199 @@
+name: Test & Deploy
+
+on:
+  push:
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      workflows_changed: ${{ steps.check-file-changes.outputs.workflows == 'true' }}
+      sh_changed: ${{ steps.check-file-changes.outputs.sh == 'true' }}
+      bat_changed: ${{ steps.check-file-changes.outputs.bat == 'true' }}
+      version_changed: ${{ steps.version-check.outputs.version_changed }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for file changes
+        id: check-file-changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 || echo "")
+          echo "Changed files: $CHANGED"
+    
+          if echo "$CHANGED" | grep -q '^\.github/workflows/'; then
+            echo "workflows=true" >> $GITHUB_OUTPUT
+          else
+            echo "workflows=false" >> $GITHUB_OUTPUT
+          fi
+    
+          if echo "$CHANGED" | grep -q '^nvim_app\.sh$'; then
+            echo "sh=true" >> $GITHUB_OUTPUT
+          else
+            echo "sh=false" >> $GITHUB_OUTPUT
+          fi
+    
+          if echo "$CHANGED" | grep -q '^nvim_app\.bat$'; then
+            echo "bat=true" >> $GITHUB_OUTPUT
+          else
+            echo "bat=false" >> $GITHUB_OUTPUT
+          fi
+
+      - id: version-check
+        name: Check for version in commit
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if echo "$COMMIT_MSG" | grep -qE '\b[0-9]+\.[0-9]+\.[0-9]+\b'; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+          fi 
+
+  test-linux:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true' }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Testing Linux Installation
+        run: |
+          bash nvim_app.sh --pipeline
+
+  test-macOS:
+    runs-on: macos-latest
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true'}}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      
+      - name: Uninstall Homebrew
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+          sudo rm -rf /opt/homebrew
+          sudo rm -rf /usr/local/Homebrew
+          rm -rf ~/Library/Caches/Homebrew
+
+      - name: Testing MacOS Installation
+        run: |
+          bash nvim_app.sh --pipeline
+
+  test-windows:
+    runs-on: windows-latest
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.bat_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true' }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Uninstall Chocolatey (if installed)
+        run: |
+          if (Test-Path "C:\ProgramData\chocolatey") {
+            Remove-Item -Recurse -Force "C:\ProgramData\chocolatey"
+          }
+
+      - name: Testing Windows Installation
+        shell: cmd
+        run: |
+          nvim_app.bat --pipeline
+
+  upload-windows:
+    needs: test-windows
+    if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rename and package Windows
+        shell: cmd
+        run: |
+          copy nvim_app.bat nvim_windows.bat
+          mkdir dist-windows
+          copy nvim_windows.bat dist-windows\
+          7z a nvim_windows.zip dist-windows\
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nvim-windows
+          path: nvim_windows.zip
+    
+
+  upload-linux:
+    needs: test-linux
+    if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rename and package Linux
+        run: |
+          cp nvim_app.sh nvim_linux.sh
+          chmod +x nvim_linux.sh
+          tar -czf nvim_linux.tar.gz --transform 's|^|nvim-app/|' nvim_linux.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nvim-linux
+          path: nvim_linux.tar.gz
+
+  upload-macOS:
+    needs: test-macOS
+    if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rename and package macOS
+        run: |
+          cp nvim_app.sh nvim_macos.sh
+          chmod +x nvim_macos.sh
+          mkdir nvim-app
+          cp nvim_macos.sh nvim-app/
+          hdiutil create -volname "nvim-app" -srcfolder nvim-app -ov -format UDZO nvim_macos.dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nvim-macos
+          path: nvim_macos.dmg
+
+  release:
+    needs: [detect-changes, upload-windows, upload-linux, upload-macOS]
+    if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+    
+      - uses: actions/download-artifact@v4
+    
+      - name: Extract version from commit
+        id: version
+        run: |
+          COMMIT_MSG="$(git log -1 --pretty=%B)"
+          echo "Commit message: '$COMMIT_MSG'"
+      
+          VERSION=$(printf '%s\n' "$COMMIT_MSG" | grep -oE '\b[0-9]+\.[0-9]+\.[0-9]+\b' | head -1)
+      
+          if [ -z "$VERSION" ]; then
+            echo "No version found, failing release" >&2
+            exit 1
+          fi
+      
+          echo "Found version: $VERSION"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+    
+      - name: List artifacts for debug
+        run: ls -la nvim-*/
+    
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Release ${{ steps.version.outputs.tag }}"
+          files: |
+            nvim-windows/nvim_windows.zip
+            nvim-linux/nvim_linux.tar.gz
+            nvim-macos/nvim_macos.dmg
+          draft: false
+          prerelease: false
