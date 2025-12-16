@@ -2,7 +2,6 @@ name: Test & Compile
 
 on:
   push:
-    branches: [main, add-compiler]
 
 jobs:
   detect-changes:
@@ -89,6 +88,7 @@ jobs:
 
   upload-windows:
     needs: test-windows
+    if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -109,6 +109,7 @@ jobs:
 
   upload-linux:
     needs: test-linux
+    if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -124,6 +125,7 @@ jobs:
 
   upload-macOS:
     needs: test-macOS
+    if: ${{ needs.detect-changes.outputs.version_changed == 'true' }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
