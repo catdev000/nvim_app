@@ -7,9 +7,9 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      workflows_changed: ${{ steps.filter.outputs.workflows == 'true' }}
-      sh_changed: ${{ steps.filter.outputs.sh == 'true' }}
-      bat_changed: ${{ steps.filter.outputs.bat == 'true' }}
+      workflows_changed: ${{ steps.check-file-changes.outputs.workflows == 'true' }}
+      sh_changed: ${{ steps.check-file-changes.outputs.sh == 'true' }}
+      bat_changed: ${{ steps.check-file-changes.outputs.bat == 'true' }}
       version_changed: ${{ steps.version-check.outputs.version_changed }}
     steps:
       - name: Check out repo
@@ -17,19 +17,14 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            workflows:
-              paths:
-                - '.github/workflows/**'
-            sh:
-              paths:
-                - 'nvim_app.sh'
-            bat:
-              paths:
-                - 'nvim_app.bat'
+      - name: Check for file changes
+        id: check-file-changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 || echo "")
+    
+          echo "workflows=$(echo "$CHANGED" | grep -q '^\\.github/workflows/' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "sh=$(echo "$CHANGED" | grep -q '^nvim_app\.sh$' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "bat=$(echo "$CHANGED" | grep -q '^nvim_app\.bat$' && echo true || echo false)" >> $GITHUB_OUTPUT
 
       - id: version-check
         name: Check for version in commit
