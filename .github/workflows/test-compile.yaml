@@ -145,13 +145,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+    
       - uses: actions/download-artifact@v4
     
       - name: Extract version from commit
         id: version
         run: |
-          VERSION=$(git log -1 --pretty=%B | grep -oE '\d+\.\d+\.\d+' | head -1)
-          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          COMMIT_MSG="$(git log -1 --pretty=%B)"
+          echo "Commit message: '$COMMIT_MSG'"
+      
+          VERSION=$(printf '%s\n' "$COMMIT_MSG" | grep -oE '\b[0-9]+\.[0-9]+\.[0-9]+\b' | head -1)
+      
+          if [ -z "$VERSION" ]; then
+            echo "No version found, failing release" >&2
+            exit 1
+          fi
+      
+          echo "Found version: $VERSION"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
     
       - name: List artifacts for debug
         run: ls -la nvim-*/
@@ -166,4 +179,4 @@ jobs:
             nvim-linux/nvim_linux.tar.gz
             nvim-macos/nvim_macos.dmg
           draft: false
-          prerelease: false 
+          prerelease: false
