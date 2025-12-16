@@ -34,7 +34,7 @@
 - [ ] Added How-shell-works doc
 - [ ] Added How-batch-works doc
 - [ ] Added How-pipeline-works doc
-- [ ] Added template strategy doc 
+- [ ] Added template strategy doc
 
 ### Adding choice of special options
 - [ ] Added option to install nvchad after nvim Installation
