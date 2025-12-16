@@ -14,12 +14,12 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: dorny/paths-filter@v3
         id: filter
         with:
-          working-directory: .
-          base: HEAD~1
           filters: |
             workflows:
               - '.github/workflows/**'
