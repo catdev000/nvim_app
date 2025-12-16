@@ -23,7 +23,7 @@ jobs:
           CHANGED=$(git diff --name-only HEAD~1 || echo "")
           echo "Changed files: $CHANGED"
     
-          if echo "$CHANGED" | grep -q '^\\.github/workflows/'; then
+          if echo "$CHANGED" | grep -q '^\.github/workflows/'; then
             echo "workflows=true" >> $GITHUB_OUTPUT
           else
             echo "workflows=false" >> $GITHUB_OUTPUT
@@ -40,7 +40,6 @@ jobs:
           else
             echo "bat=false" >> $GITHUB_OUTPUT
           fi
-      
 
       - id: version-check
         name: Check for version in commit
