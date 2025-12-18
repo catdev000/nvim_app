@@ -31,10 +31,11 @@
 - [x] Realeases shall only be created on main branch and only if the Commit message contains "\d{1,}.\d{1,}.\d{1,}"
 
 ### Add docs
+- [x] Added Pipeline documentation
 - [ ] Added How-shell-works doc
 - [ ] Added How-batch-works doc
-- [ ] Added How-pipeline-works doc
 - [ ] Added template strategy doc
+- [ ] Added README
 
 ### Adding choice of special options
 - [ ] Added option to install nvchad after nvim Installation
