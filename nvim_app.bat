@@ -103,7 +103,7 @@ if "%1"=="--pipeline" (
         exit /b 1
     )
 
-    if not exist "%TARGET_PATH%\lua" (
+    if not exist "%TARGET_PATH%\nvim\lua" (
         echo Error: Directory %TARGET_PATH%\lua not found
         exit /b 1
     )
