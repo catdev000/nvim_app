@@ -61,6 +61,17 @@ if errorlevel 1 (
         xcopy /E /I /Y "%NVIM_CORE_PATH%\*.*" "%NVIM_CONFIG_DIR%\"
     ) else (
         echo Error: nvim_core folder not found in current directory.
+        
+        echo START DEBUG
+        
+        echo Error: nvim_core folder not found!
+        echo Script is located at: %~dp0
+        echo Expected to find nvim_core at: %NVIM_CORE_PATH%
+        echo Current Working Directory is: %CD%
+      
+        echo END DEBUG
+        
+        
         exit /b 1
     )
     
