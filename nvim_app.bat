@@ -55,20 +55,9 @@ if errorlevel 1 (
     if exist "nvim_core" (
         echo Copying nvim_core to %APPDATA%\nvim"...
         mkdir "%APPDATA%\nvim"
-        xcopy /E /I /Y "nvim_core\*.*" "%APPDATA%\nvim"\"
+        xcopy /E /I /Y "nvim_core\*.*" "%APPDATA%\nvim"
     ) else (
-        echo Error: nvim_core folder not found in current directory.
-        
-        echo START DEBUG
-        
-        echo Error: nvim_core folder not found!
-        echo Script is located at: %~dp0
-        echo Expected to find nvim_core at: %NVIM_CORE_PATH%
-        echo Current Working Directory is: %CD%
-      
-        echo END DEBUG
-        
-        
+        echo Error: nvim_core folder not found in current directory.        
         exit /b 1
     )
     
