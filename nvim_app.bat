@@ -70,10 +70,10 @@ echo Neovim configuration setup complete.
 if "%1"=="--pipeline" (
     echo Running pipeline checks...
     
-    :: Test if nvim can start and quit cleanly (catches init.lua errors)
+    :: Test if nvim can start and quit cleanly
     nvim -c "quit" >nul 2>&1
     if errorlevel 1 (
-        echo Error: Neovim failed to load configuration (check init.lua for errors).
+        echo Error: Neovim failed to load configuration. Check init.lua for errors
         exit /b 1
     )
 
