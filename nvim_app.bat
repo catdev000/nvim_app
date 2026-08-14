@@ -12,9 +12,9 @@ echo NeoVim is not installed, installing NeoVim...
 
 :: Setup Chocolatey
 where choco >nul 2>&1
-if %errorlevel% == 0 (
+if errorlevel 0 (
     choco --version >nul 2>&1
-    if !errorlevel! == 0 (
+    if errorlevel 0 (
         echo Chocolatey ready
         goto :choco_ready
     )
@@ -29,44 +29,40 @@ set "PATH=%PATH%;C:\ProgramData\chocolatey\bin"
 
 :: NOW check nvim again with correct PATH
 where nvim >nul 2>&1
-if %errorlevel! == 0 (
-    echo NeoVim ready
-    goto :launch_nvim
+if errorlevel 1 (
+    :: Only install if truly missing
+    echo Installing NeoVim...
+    choco install neovim --yes
+
+    set "NVIM_CONFIG_DIR=%APPDATA%\nvim"
+    set "NVIM_CORE_PATH=nvim_core"
+
+    if not exist "%APPDATA%" (
+        echo Creating %APPDATA%...
+        mkdir "%APPDATA%"
+    )
+
+    if exist "%NVIM_CONFIG_DIR%" ( 
+        echo Renaming existing config at %NVIM_CONFIG_DIR%...
+        ren "%NVIM_CONFIG_DIR%" nvim_backup
+    )
+
+    if exist "%NVIM_CORE_PATH%" (
+        echo Copying nvim_core to %NVIM_CONFIG_DIR%...
+        mkdir "%NVIM_CONFIG_DIR%"
+        xcopy /E /I /Y "%NVIM_CORE_PATH%\*.*" "%NVIM_CONFIG_DIR%\"
+    ) else (
+        echo Error: nvim_core folder not found in current directory.
+        exit /b 1
+    )
+
+    :: Correct Neovim PATH
+    set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
 )
 
-:: Only install if truly missing
-echo Installing NeoVim...
-choco install neovim --yes
-
-set "NVIM_CONFIG_DIR=%APPDATA%\nvim"
-set "NVIM_CORE_PATH=nvim_core"
-
-if not exist "%APPDATA%" (
-    echo Creating %APPDATA%...
-    mkdir "%APPDATA%"
-)
-
-if exist "%NVIM_CONFIG_DIR%" ( 
-    echo Renaming existing config at %NVIM_CONFIG_DIR%...
-    ren "%NVIM_CONFIG_DIR%" nvim_backup
-)
-
-if exist "%NVIM_CORE_PATH%" (
-    echo Copying nvim_core to %NVIM_CONFIG_DIR%...
-    mkdir "%NVIM_CONFIG_DIR%"
-    xcopy /E /I /Y "%NVIM_CORE_PATH%\*.*" "%NVIM_CONFIG_DIR%\"
-) else (
-    echo Error: nvim_core folder not found in current directory.
-    exit /b 1
-)
 
 echo Neovim configuration setup complete.
 
-:: Correct Neovim PATH
-set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
-
-:launch_nvim
-nvim --version
 
 if "%1"=="--pipeline" (
     nvim -c ":qa"
