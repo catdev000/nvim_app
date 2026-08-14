@@ -35,8 +35,11 @@
 - [x] Added README
 
 ### Adding custom configuration and tests
-- [ ] Preconfigurate nvim to use the custom nvchad config (folder nvim_core (remote) must replace nvim in .config) (shell and batch)
-- [ ] Add pipeline tests to ensure templates are applied correctly to the files
+- [x] Preconfigurate nvim to use the custom nvchad config (folder nvim_core must replace nvim in .config) (shell)
+- [x] Add pipeline test to ensure templates are applied correctly to the files
+- [ ] nvim preconfig also for batch
+- [ ] Add pipeline test also for batch
+- [ ] Releases also need to include the nvim_core folder
 - [ ] Added option to preconfigurate nvim to always display the file selection "NVimTree"
 
 
