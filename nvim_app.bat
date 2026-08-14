@@ -42,23 +42,20 @@ if errorlevel 1 (
     )
      
     :: Setup Configuration
-    set "NVIM_CONFIG_DIR=%APPDATA%\nvim"
-    set "NVIM_CORE_PATH=%~dp0nvim_core"
-
     if not exist "%APPDATA%" (
         echo Creating %APPDATA%...
         mkdir "%APPDATA%"
     )
 
-    if exist "%NVIM_CONFIG_DIR%" ( 
-        echo Renaming existing config at %NVIM_CONFIG_DIR%...
-        ren "%NVIM_CONFIG_DIR%" nvim_backup
+    if exist "%APPDATA%\nvim" ( 
+        echo Renaming existing config at %APPDATA%\nvim ...
+        ren "%APPDATA%\nvim" nvim_backup
     )
 
-    if exist "%NVIM_CORE_PATH%" (
-        echo Copying nvim_core to %NVIM_CONFIG_DIR%...
-        mkdir "%NVIM_CONFIG_DIR%"
-        xcopy /E /I /Y "%NVIM_CORE_PATH%\*.*" "%NVIM_CONFIG_DIR%\"
+    if exist "nvim_core" (
+        echo Copying nvim_core to %APPDATA%\nvim"...
+        mkdir "%APPDATA%\nvim"
+        xcopy /E /I /Y "nvim_core\*.*" "%APPDATA%\nvim"\"
     ) else (
         echo Error: nvim_core folder not found in current directory.
         
@@ -91,20 +88,18 @@ if "%1"=="--pipeline" (
         exit /b 1
     )
 
-    set "TARGET_PATH=%APPDATA%\nvim"
-
-    if not exist "%TARGET_PATH%" (
-        echo Error: Directory %TARGET_PATH% not found
+    if not exist "%APPDATA%\nvim"" (
+        echo Error: Directory %APPDATA%\nvim" not found
         exit /b 1
     )
 
-    if not exist "%TARGET_PATH%\init.lua" (
-        echo Error: File %TARGET_PATH%\init.lua not found
+    if not exist "%APPDATA%\nvim\init.lua" (
+        echo Error: File %APPDATA%\nvim\init.lua not found
         exit /b 1
     )
 
-    if not exist "%TARGET_PATH%\lazy-lock.json" (
-        echo Error: File %TARGET_PATH%\lazy-lock.json not found
+    if not exist "%APPDATA%\nvim\lazy-lock.json" (
+        echo Error: File %APPDATA%\nvim\lazy-lock.json not found
         exit /b 1
     )
 
