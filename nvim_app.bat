@@ -2,38 +2,46 @@
 setlocal enabledelayedexpansion
 
 :main
+:: Check if Neovim is already installed
 if exist "C:\tools\neovim\nvim-win64\bin\nvim.exe" (
     set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
     nvim %*
-    exit /b
+    exit /b %ERRORLEVEL%
 )
 
 echo NeoVim is not installed, installing NeoVim...
 
 :: Setup Chocolatey
 where choco >nul 2>&1
-if errorlevel 0 (
-    choco --version >nul 2>&1
-    if errorlevel 0 (
-        echo Chocolatey ready
-        goto :choco_ready
+if errorlevel 1 (
+    echo Chocolatey not found. Installing Chocolatey...
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+    if errorlevel 1 (
+        echo Error: Failed to install Chocolatey.
+        exit /b 1
     )
 )
 
-echo Fixing Chocolatey...
-if exist "C:\ProgramData\chocolatey" rmdir /s /q "C:\ProgramData\chocolatey"
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-
-:choco_ready
 set "PATH=%PATH%;C:\ProgramData\chocolatey\bin"
 
-:: NOW check nvim again with correct PATH
+where choco >nul 2>&1
+if errorlevel 1 (
+    echo Error: Chocolatey installation failed or is not in PATH.
+    exit /b 1
+)
+
 where nvim >nul 2>&1
 if errorlevel 1 (
     :: Only install if truly missing
     echo Installing NeoVim...
-    choco install neovim --yes
-
+    choco install neovim --yes --no-progress
+    
+    if errorlevel 1 (
+        echo Error: Failed to install NeoVim via Chocolatey.
+        exit /b 1
+    )
+    
+    :: 6. Setup Configuration
     set "NVIM_CONFIG_DIR=%APPDATA%\nvim"
     set "NVIM_CORE_PATH=nvim_core"
 
@@ -55,18 +63,23 @@ if errorlevel 1 (
         echo Error: nvim_core folder not found in current directory.
         exit /b 1
     )
-
-    :: Correct Neovim PATH
+    
+    :: Update PATH for Neovim
     set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
 )
 
-
 echo Neovim configuration setup complete.
 
-
 if "%1"=="--pipeline" (
-    nvim -c ":qa"
+    echo Running pipeline checks...
     
+    :: Test if nvim can start and quit cleanly (catches init.lua errors)
+    nvim -c "quit" >nul 2>&1
+    if errorlevel 1 (
+        echo Error: Neovim failed to load configuration (check init.lua for errors).
+        exit /b 1
+    )
+
     set "TARGET_PATH=%APPDATA%\nvim"
 
     if not exist "%TARGET_PATH%" (
@@ -93,6 +106,7 @@ if "%1"=="--pipeline" (
     exit /b 0
 ) else (
     nvim
+    exit /b %ERRORLEVEL%
 )
 
 goto :eof
