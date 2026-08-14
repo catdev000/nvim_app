@@ -94,8 +94,9 @@ install_nvim_custom_core() {
   TARGET_PATH="$HOME/.config/nvim"
 
   if [ -d "$TARGET_PATH" ]; then
-    echo "Removing existing config at $TARGET_PATH..."
-    rm -rf "$TARGET_PATH"
+    echo "Renaming existing config at $TARGET_PATH..."
+    [ -d "${TARGET_PATH}_backup" ] && rm -rf "${TARGET_PATH}_backup" # Removing possible old backup
+    mv "$TARGET_PATH" "${TARGET_PATH}_backup" # rename nvim into nvim_backup
   fi
 
   if [ -d "$NVIM_CORE_PATH" ]; then
