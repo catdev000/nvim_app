@@ -88,7 +88,7 @@ if "%1"=="--pipeline" (
         exit /b 1
     )
 
-    if not exist "%APPDATA%\nvim"" (
+    if not exist "%APPDATA%\nvim" (
         echo Error: Directory %APPDATA%\nvim" not found
         exit /b 1
     )
@@ -103,8 +103,8 @@ if "%1"=="--pipeline" (
         exit /b 1
     )
 
-    if not exist "%TARGET_PATH%\nvim\lua" (
-        echo Error: Directory %TARGET_PATH%\lua not found
+    if not exist "%APPDATA%\nvim\lua" (
+        echo Error: Directory %APPDATA%\nvim\lua not found
         exit /b 1
     )
 
