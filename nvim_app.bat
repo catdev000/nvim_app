@@ -40,10 +40,10 @@ if errorlevel 1 (
         echo Error: Failed to install NeoVim via Chocolatey.
         exit /b 1
     )
-    
-    :: 6. Setup Configuration
+     
+    :: Setup Configuration
     set "NVIM_CONFIG_DIR=%APPDATA%\nvim"
-    set "NVIM_CORE_PATH=nvim_core"
+    set "NVIM_CORE_PATH=%~dp0nvim_core"
 
     if not exist "%APPDATA%" (
         echo Creating %APPDATA%...
