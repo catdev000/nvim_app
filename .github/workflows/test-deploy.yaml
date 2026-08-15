@@ -114,6 +114,7 @@ jobs:
           copy nvim_app.bat nvim_windows.bat
           mkdir dist-windows
           copy nvim_windows.bat dist-windows\
+          xcopy /E /I /Y nvim_core dist-windows\nvim_core
           7z a nvim_windows.zip dist-windows\
 
       - uses: actions/upload-artifact@v4
@@ -131,8 +132,9 @@ jobs:
       - name: Rename and package Linux
         run: |
           cp nvim_app.sh nvim_linux.sh
+          cp -r nvim_core .
           chmod +x nvim_linux.sh
-          tar -czf nvim_linux.tar.gz --transform 's|^|nvim-app/|' nvim_linux.sh
+          tar -czf nvim_linux.tar.gz --transform 's|^|nvim-app/|' nvim_linux.sh nvim_core
       - uses: actions/upload-artifact@v4
         with:
           name: nvim-linux
@@ -150,6 +152,7 @@ jobs:
           chmod +x nvim_macos.sh
           mkdir nvim-app
           cp nvim_macos.sh nvim-app/
+          cp -r nvim_core nvim-app/
           hdiutil create -volname "nvim-app" -srcfolder nvim-app -ov -format UDZO nvim_macos.dmg
       - uses: actions/upload-artifact@v4
         with:

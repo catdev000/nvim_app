@@ -12,6 +12,7 @@
 - [ ] Add Settings tab
 - [ ] Add Check for updates function (Display warning that it will overwrite the nvim config) (also run brew upgrade nvim)
 - [ ] Start that menu on each startup of the nvim / execute the shortcut
+- [ ] Add documentation for start menu in custom_config.md 
 
 ### Add a terminal opener at the bottom of NvimTree
 - [ ] Add an clickable option to open a new horizontal terminal
@@ -39,8 +40,8 @@
 - [x] Add pipeline test to ensure templates are applied correctly to the files
 - [x] nvim preconfig also for batch (+ nvim_backup)
 - [x] Add pipeline test also for batch
-- [ ] update documentation for batch and shell
-- [ ] Releases also need to include the nvim_core folder to ensure that installation works as well
+- [x] update documentation for batch and shell
+- [x] Releases also need to include the nvim_core folder to ensure that installation works as well
 
 
 ## 0.0.1
