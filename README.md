@@ -7,6 +7,7 @@ Either git clone or download the latest release: <br>
 - On windows execute the nvim_app.bat (Double click)
 - On linux/mac execute the nvim_app.sh (Right click and execute)
 - After executing the script once for installation you can also use "nvim" to start the app
+- If you have already installed nvim simply move the nvim_core into your `.config` folder on linux or your `appdata something` on windows and rename it nvim (replace the old nvim config)
 
 ## How to update
 
