@@ -6,75 +6,114 @@
 if exist "C:\tools\neovim\nvim-win64\bin\nvim.exe" (
     set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
     nvim %*
-    exit /b
+    exit /b %ERRORLEVEL%
 )
 ```
 
-### Installing nvim if it does not exist with choco
+### Install chocolatey if not installed
 ```
 echo NeoVim is not installed, installing NeoVim...
 
 :: Setup Chocolatey
 where choco >nul 2>&1
-if %errorlevel% == 0 (
-    choco --version >nul 2>&1
-    if !errorlevel! == 0 (
-        echo Chocolatey ready
-        goto :choco_ready
+if errorlevel 1 (
+    echo Chocolatey not found. Installing Chocolatey...
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+    if errorlevel 1 (
+        echo Error: Failed to install Chocolatey.
+        exit /b 1
     )
 )
-```
 
-### Fixing chocolatey if it throws error
-```
-echo Fixing Chocolatey...
-if exist "C:\ProgramData\chocolatey" rmdir /s /q "C:\ProgramData\chocolatey"
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-```
-
-### Installation of nvim with chocolatey
-```
-echo Installing NeoVim...
-choco install neovim --yes
-```
-
-### Try to launch neovim again after installation
-```
-:choco_ready
 set "PATH=%PATH%;C:\ProgramData\chocolatey\bin"
+```
 
-:: NOW check nvim again with correct PATH
+### Checking chocolatey works now
+```
+where choco >nul 2>&1
+if errorlevel 1 (
+    echo Error: Chocolatey installation failed or is not in PATH.
+    exit /b 1
+)
+```
+
+### Installation of nvim with chocolatey and copying configuration
+```
 where nvim >nul 2>&1
-if %errorlevel! == 0 (
-    echo NeoVim ready
-    goto :launch_nvim
+if errorlevel 1 (
+    :: Only install if truly missing
+    echo Installing NeoVim...
+    choco install neovim --yes --no-progress
+    
+    if errorlevel 1 (
+        echo Error: Failed to install NeoVim via Chocolatey.
+        exit /b 1
+    )
+     
+    :: Setup Configuration
+    if not exist "%APPDATA%" (
+        echo Creating %APPDATA%...
+        mkdir "%APPDATA%"
+    )
+
+    if exist "%APPDATA%\nvim" ( 
+        echo Renaming existing config at %APPDATA%\nvim ...
+        ren "%APPDATA%\nvim" nvim_backup
+    )
+
+    if exist "nvim_core" (
+        echo Copying nvim_core to %APPDATA%\nvim"...
+        mkdir "%APPDATA%\nvim"
+        xcopy /E /I /Y "nvim_core\*.*" "%APPDATA%\nvim"
+    ) else (
+        echo Error: nvim_core folder not found in current directory.        
+        exit /b 1
+    )
+    
+    :: Update PATH for Neovim
+    set "PATH=%PATH%;C:\tools\neovim\nvim-win64\bin"
 )
+
+echo Neovim configuration setup complete.
 ```
 
-### Install nvim if it still does not exist
-```
-:: Only install if truly missing
-echo Installing NeoVim...
-choco install neovim --yes
-```
-
-### Start nvim after the installation (quit it directly afterwards for pipeline testing)
+### Try to launch neovim again after installation (run checks for pipeline mode)
 ```
 if "%1"=="--pipeline" (
-    nvim -c ":qa"
+    echo Running pipeline checks...
+    
+    :: Test if nvim can start and quit cleanly
+    nvim -c "quit" >nul 2>&1
+    if errorlevel 1 (
+        echo Error: Neovim failed to load configuration. Check init.lua for errors
+        exit /b 1
+    )
+
+    if not exist "%APPDATA%\nvim" (
+        echo Error: Directory %APPDATA%\nvim" not found
+        exit /b 1
+    )
+
+    if not exist "%APPDATA%\nvim\init.lua" (
+        echo Error: File %APPDATA%\nvim\init.lua not found
+        exit /b 1
+    )
+
+    if not exist "%APPDATA%\nvim\lazy-lock.json" (
+        echo Error: File %APPDATA%\nvim\lazy-lock.json not found
+        exit /b 1
+    )
+
+    if not exist "%APPDATA%\nvim\lua" (
+        echo Error: Directory %APPDATA%\nvim\lua not found
+        exit /b 1
+    )
+
+    echo All pipeline checks passed.
+    exit /b 0
 ) else (
     nvim
+    exit /b %ERRORLEVEL%
 )
 ```
 
-### Helper function
-```
-:launch_nvim
-nvim --version
-
-if "%1"=="--pipeline" (
-    nvim -c ":qa"
-) else (
-    nvim
-)
-```

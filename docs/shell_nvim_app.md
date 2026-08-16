@@ -34,21 +34,49 @@ else
     fi
 ```
 
-### Install nvim with brew
+### Install nvim with brew and its custom core
 ```
-brew install neovim
-nvim --version
+install_nvim_custom_core
 ```
 
 ### If pipeline mode is active start, test and close nvim again, otherwise start it normally
 ```
-if [ "$1" = "--pipeline" ]; then
-    # Interactive mode: start nvim normally
-    nvim
-else
-    # Pipeline mode: start nvim and quit immediately
-    nvim -c ':qa'
-fi
+if [ "$1" = '--pipeline' ]; then
+
+    # Pipeline mode: start nvim and quit immmediatly
+    nvim -c 'qa!'
+    
+    # Run tests if custom configs are there
+    TARGET_PATH="$HOME/.config/nvim"
+
+    if [ ! -d "$TARGET_PATH" ]; then
+      echo "Error: Directory $TARGET_PATH not found"
+      return 1
+    fi
+
+    if [ ! -f "$TARGET_PATH/init.lua" ]; then
+      echo "Error: File $TARGET_PATH/init.lua not found"
+      return 1
+    fi
+
+    if [ ! -f "$TARGET_PATH/lazy-lock.json" ]; then
+      echo "Error: File $TARGET_PATH/lazy-lock.json not found"
+      return 1
+    fi
+
+    if [ ! -d "$TARGET_PATH/lua" ]; then
+      echo "Error: Directory $TARGET_PATH/lua not found"
+      return 1
+    fi
+
+    echo "All pipeline checks passed."
+    return 0
+    exit;
+  fi
+  
+  nvim
+  exit;
+}
 ```
 
 ### Helper functions for installation
@@ -63,6 +91,30 @@ install_brew_macos() {
   echo "macOS detected, installing brew for mac"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   export PATH="/usr/local/bin:$PATH"
+}
+
+install_nvim_custom_core() {
+  yes | brew install neovim
+  nvim --version
+
+  mkdir -p "$HOME/.config"
+  
+  NVIM_CORE_PATH="nvim_core"
+  TARGET_PATH="$HOME/.config/nvim"
+
+  if [ -d "$TARGET_PATH" ]; then
+    echo "Renaming existing config at $TARGET_PATH..."
+    [ -d "${TARGET_PATH}_backup" ] && rm -rf "${TARGET_PATH}_backup" # Removing possible old backup
+    mv "$TARGET_PATH" "${TARGET_PATH}_backup" # rename nvim into nvim_backup
+  fi
+
+  if [ -d "$NVIM_CORE_PATH" ]; then
+    echo "Copy nvim_core to $TARGET_PATH..."
+    cp -r "$NVIM_CORE_PATH" "$TARGET_PATH"
+  else
+    echo "Error: nvim_core folder not found in script directory ($SCRIPT_DIR)"
+    return 1
+  fi
 }
 
 source_brew() {

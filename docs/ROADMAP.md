@@ -10,8 +10,9 @@
 - [ ] Add a menu option into the nvchad configuration and bind it to a shortcut
 - [ ] Menu shall have options "Open recent projects (<Space>+f+p)", "Package Manager (:Mason)", "Settings", "Check for Updates", "Exit Menu", "Quit Nvim (:qa)",
 - [ ] Add Settings tab
-- [ ] Add Check for updates function (Display warning that it will overwrite the nvim config)
+- [ ] Add Check for updates function (Display warning that it will overwrite the nvim config) (also run brew upgrade nvim)
 - [ ] Start that menu on each startup of the nvim / execute the shortcut
+- [ ] Add documentation for start menu in custom_config.md 
 
 ### Add a terminal opener at the bottom of NvimTree
 - [ ] Add an clickable option to open a new horizontal terminal
@@ -35,9 +36,12 @@
 - [x] Added README
 
 ### Adding custom configuration and tests
-- [ ] Preconfigurate nvim to use the custom nvchad config (folder nvim_core (remote) must replace nvim in .config) (shell and batch)
-- [ ] Add pipeline tests to ensure templates are applied correctly to the files
-- [ ] Added option to preconfigurate nvim to always display the file selection "NVimTree"
+- [x] Preconfigurate nvim to use the custom nvchad config (nvim_core will replace nvim in .config => nvim will become nvim_backup) (shell)
+- [x] Add pipeline test to ensure templates are applied correctly to the files
+- [x] nvim preconfig also for batch (+ nvim_backup)
+- [x] Add pipeline test also for batch
+- [x] update documentation for batch and shell
+- [x] Releases also need to include the nvim_core folder to ensure that installation works as well
 
 
 ## 0.0.1
