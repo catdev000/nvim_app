@@ -1,4 +1,4 @@
-# Nvim App
+# Nvim App (v0.0.2)
 An Easy to run shell / batch script for installing and starting nvim
 
 ## How the install
