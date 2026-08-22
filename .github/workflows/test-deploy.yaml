@@ -10,6 +10,7 @@ jobs:
       workflows_changed: ${{ steps.check-file-changes.outputs.workflows == 'true' }}
       sh_changed: ${{ steps.check-file-changes.outputs.sh == 'true' }}
       bat_changed: ${{ steps.check-file-changes.outputs.bat == 'true' }}
+      nvim_core_changed: ${{ steps.check-file-changes.outputs.nvim_core == 'true' }} 
       version_changed: ${{ steps.version-check.outputs.version_changed }}
     steps:
       - name: Check out repo
@@ -41,6 +42,12 @@ jobs:
             echo "bat=false" >> $GITHUB_OUTPUT
           fi
 
+          if echo "$CHANGED" | grep -q '^nvim_core/'; then
+            echo "nvim_core=true" >> $GITHUB_OUTPUT
+          else
+            echo "nvim_core=false" >> $GITHUB_OUTPUT
+          fi
+
       - id: version-check
         name: Check for version in commit
         run: |
@@ -54,7 +61,7 @@ jobs:
   test-linux:
     runs-on: ubuntu-latest
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true' || needs.detect-changes.outputs.nvim_core_changed == 'true' }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -66,7 +73,7 @@ jobs:
   test-macOS:
     runs-on: macos-latest
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true'}}
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.sh_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true' || needs.detect-changes.outputs.nvim_core_changed == 'true' }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -85,7 +92,7 @@ jobs:
   test-windows:
     runs-on: windows-latest
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.bat_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.workflows_changed == 'true' || needs.detect-changes.outputs.bat_changed == 'true' || needs.detect-changes.outputs.version_changed == 'true' || needs.detect-changes.outputs.nvim_core_changed == 'true' }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
