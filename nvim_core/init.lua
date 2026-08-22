@@ -44,5 +44,6 @@ vim.api.nvim_create_autocmd({ "VimEnter" }, {
 	callback = function()
 		vim.cmd("NvimTreeToggle") -- Open nvim-tree
     vim.cmd("NvimTreeResize 35")
+    require("configs.startmenu").open()
 	end,
 })

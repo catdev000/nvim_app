@@ -1,16 +1,17 @@
 ## 0.0.4
 
-### Add Docker terminal window to nvim
-- [ ] Add an docker terminal overview plugin on first startup if user wants that (after Installation)
+### Add Ollama AI support
+- [ ] Add an AI Menu where the user can chat inside neovim with an local ollama model
+- [ ] Add an warning if the connection to ollama failed
+- [ ] Add a model selection of different aviable ollama models (ollama list)
 
 
 ## 0.0.3
 
 ### Add Start Menu on startup 
 - [ ] Add a menu option into the nvchad configuration and bind it to a shortcut
-- [ ] Menu shall have options "Open recent projects (<Space>+f+p)", "Package Manager (:Mason)", "Settings", "Check for Updates", "Exit Menu", "Quit Nvim (:qa)",
+- [ ] Menu shall have options "Open recent projects (<Space>+f+p)", "Plugin Manager (:Lazy sync)", "Settings", "Exit Menu", "Quit Nvim (:qa)",
 - [ ] Add Settings tab
-- [ ] Add Check for updates function (Display warning that it will overwrite the nvim config) (also run brew upgrade nvim)
 - [ ] Start that menu on each startup of the nvim / execute the shortcut
 - [ ] Add documentation for start menu in custom_config.md 
 
